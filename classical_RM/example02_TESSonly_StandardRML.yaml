@@ -19,12 +19,18 @@ inputs:
     kind: RV
     models:
       - radial_velocities
-  RVrevolutions_HARPS_G2:
-    dataset_2d: True
-    file: ccf_rmr_HARPS_G2_prefit_original.pkl
+  RVfile_2007-07-19:
+    file: ./literature_dataset/RVfile_2007-07-19_PyORBIT.dat
     kind: RV
     models:
-      - rossitermclaughlin_revolutions
+      - radial_velocities
+      - rossiter_mclaughlin
+  RVfile_2007-08-28:
+    file: ./literature_dataset/RVfile_2007-08-28_PyORBIT.dat
+    kind: RV
+    models:
+      - radial_velocities
+      - rossiter_mclaughlin
 common:
   planets:
     b:
@@ -39,13 +45,20 @@ common:
         P: Linear
   star:
     star_parameters:
+      use_stellar_rotation: True
       #use_differential_rotation: False
-      #convective_order: 0
+      convective_order: 1
       priors:
         mass: ['Gaussian', 0.79, 0.08]
         radius: ['Gaussian', 0.75 , 0.01]
         density: ['Gaussian', 1.87, 0.20] #in Solar unit!!!!!!!
         rotation_period: ['Gaussian', 12.50, 1.50]
+        rotation_period: ['Gaussian', 12.00, 1.00]
+        v_sini: ['Gaussian', 3.0, 1.0]
+      boundaries:
+        veq_star: [0, 20.]
+        convective_c1: [-2.00, 0.00]
+        rotation_period: [9.0, 15.0]
     limb_darkening_TESS:
       type: ld_quadratic
       parametrization: Kipping
@@ -58,20 +71,17 @@ models:
   radial_velocities:
     planets:
       - b
-  rossitermclaughlin_revolutions:
-    kind: rossitermclaughlin_revolutions
+  rossiter_mclaughlin:
+    kind: rossitermclaughlin_precise
     limb_darkening: limb_darkening_HARPSN
-    #star_ngrid: 201
-    use_improved_model: False
+    star_ngrid: 201
     planets:
       - b
-    fixed:
-      rv_offset: [0.00, 0.00]
   lc_model_TESS:
     kind: batman_transit
     limb_darkening: limb_darkening_TESS
     planets:
-      - b 
+      - b
 parameters:
   Tref: 2459500.00
 solver:
