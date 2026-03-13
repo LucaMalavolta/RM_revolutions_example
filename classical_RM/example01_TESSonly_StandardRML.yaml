@@ -1,0 +1,90 @@
+inputs:
+  LCdata_TESS:
+    file: ./literature_dataset/HD189733_TESS_PyORBIT.dat
+    kind: Phot
+    models:
+      - lc_model_TESS
+  Bouchy2005_RV01_noRML:
+    file: ./literature_dataset/Bouchy2005_RV01_noRML_PyORBIT.dat
+    kind: RV
+    models:
+      - radial_velocities
+  RV_Winn2006_noRML:
+    file: ./literature_dataset/Winn2006_RV02_noRML_PyORBIT.dat
+    kind: RV
+    models:
+      - radial_velocities
+  Boisse2009_RV03_noRML:
+    file: ./literature_dataset/Boisse2009_RV03_noRML_PyORBIT.dat
+    kind: RV
+    models:
+      - radial_velocities
+  RVfile_2007-07-19:
+    file: ./literature_dataset/RVfile_2007-07-19_PyORBIT.dat
+    kind: RV
+    models:
+      - radial_velocities
+      - rossiter_mclaughlin
+  RVfile_2007-08-28:
+    file: ./literature_dataset/RVfile_2007-08-28_PyORBIT.dat
+    kind: RV
+    models:
+      - radial_velocities
+      - rossiter_mclaughlin
+common:
+  planets:
+    b:
+      orbit: circular
+      parametrization: Eastman2013_Tcent
+      boundaries:
+        P: [2.215, 2.220]
+        K: [0.01, 1000.0]
+        Tc: [2459770.35,2459770.45]
+        e: [0.00, 0.95]
+      spaces:
+        P: Linear
+  star:
+    star_parameters:
+      priors:
+        mass: ['Gaussian', 0.79, 0.08]
+        radius: ['Gaussian', 0.75 , 0.01]
+        density: ['Gaussian', 1.87, 0.20] #in Solar unit!!!!!!!
+        rotation_period: ['Gaussian', 12.50, 1.50]
+    limb_darkening_TESS:
+      type: ld_quadratic
+      parametrization: Kipping
+    limb_darkening_HARPSN:
+      type: ld_quadratic
+      priors:
+        ld_c1: ['Gaussian', 0.67, 0.05]
+        ld_c2: ['Gaussian', 0.86, 0.05]
+models:
+  radial_velocities:
+    planets:
+      - b
+  rossiter_mclaughlin:
+    kind: rossitermclaughlin_precise
+    limb_darkening: limb_darkening_HARPSN
+    star_ngrid: 201
+    planets:
+      - b
+  lc_model_TESS:
+    kind: batman_transit
+    limb_darkening: limb_darkening_TESS
+    planets:
+      - b
+parameters:
+  Tref: 2459500.00
+solver:
+  pyde:
+    ngen: 100000
+    npop_mult: 4
+  emcee:
+    npop_mult: 4
+    nsteps: 50000
+    nburn: 20000
+    nsave: 10000
+    thin: 100
+  nested_sampling:
+    nlive: 1000
+  recenter_bounds: True
